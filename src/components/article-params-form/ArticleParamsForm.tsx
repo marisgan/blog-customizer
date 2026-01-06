@@ -9,6 +9,7 @@ import {
 	fontColors,
 	backgroundColors,
 	contentWidthArr,
+	ArticleStateType,
 } from 'src/constants/articleProps';
 import { RadioGroup } from 'src/ui/radio-group';
 import { Select } from 'src/ui/select';
@@ -17,12 +18,36 @@ import { Text } from 'src/ui/text';
 import styles from './ArticleParamsForm.module.scss';
 import { useClickOutside } from 'src/hooks/useClickOutside';
 
-export const ArticleParamsForm = () => {
+type ArticleParamsFormProps = {
+	value: ArticleStateType;
+	onChange: (next: ArticleStateType) => void;
+	onApply: () => void;
+	onReset: () => void;
+};
+
+export const ArticleParamsForm = ({
+	value,
+	onChange,
+	onApply,
+	onReset,
+}: ArticleParamsFormProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const toggle = () => setIsOpen((prev) => !prev);
 	const sidebarRef = useRef<HTMLElement | null>(null);
 
 	useClickOutside(sidebarRef, isOpen, () => setIsOpen(false));
+
+	const onSubmit = (e: React.SyntheticEvent) => {
+		e.preventDefault();
+		onApply();
+	};
+
+	const updateField = <K extends keyof ArticleStateType>(
+		key: K,
+		fieldValue: ArticleStateType[K]
+	) => {
+		onChange({ ...value, [key]: fieldValue });
+	};
 
 	return (
 		<>
@@ -33,36 +58,41 @@ export const ArticleParamsForm = () => {
 					className={clsx(styles.container, {
 						[styles.container_open]: isOpen,
 					})}>
-					<form className={styles.form}>
+					<form className={styles.form} onSubmit={onSubmit} onReset={onReset}>
 						<Text weight={800} size={31} uppercase>
 							задайте параметры
 						</Text>
 						<Select
-							selected={fontFamilyOptions[0]}
+							selected={value.fontFamilyOption}
 							options={fontFamilyOptions}
 							title={'шрифт'}
+							onChange={(opt) => updateField('fontFamilyOption', opt)}
 						/>
 						<RadioGroup
-							name='--font-size'
+							name='font-size'
 							options={fontSizeOptions}
-							selected={fontSizeOptions[0]}
+							selected={value.fontSizeOption}
 							title={'размер шрифта'}
+							onChange={(opt) => updateField('fontSizeOption', opt)}
 						/>
 						<Select
-							selected={fontColors[0]}
+							selected={value.fontColor}
 							options={fontColors}
 							title={'цвет шрифта'}
+							onChange={(opt) => updateField('fontColor', opt)}
 						/>
 						<Separator />
 						<Select
-							selected={backgroundColors[0]}
+							selected={value.backgroundColor}
 							options={backgroundColors}
 							title={'цвет фона'}
+							onChange={(opt) => updateField('backgroundColor', opt)}
 						/>
 						<Select
-							selected={contentWidthArr[0]}
+							selected={value.contentWidth}
 							options={contentWidthArr}
 							title={'ширина контента'}
+							onChange={(opt) => updateField('contentWidth', opt)}
 						/>
 						<div className={styles.bottomContainer}>
 							<Button title='Сбросить' htmlType='reset' type='clear' />
