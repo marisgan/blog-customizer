@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import clsx from 'clsx';
 
 import { ArrowButton } from 'src/ui/arrow-button';
@@ -15,16 +15,21 @@ import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
 import { Text } from 'src/ui/text';
 import styles from './ArticleParamsForm.module.scss';
+import { useClickOutside } from 'src/hooks/useClickOutside';
 
 export const ArticleParamsForm = () => {
 	const [isOpen, setIsOpen] = useState(false);
-	const onClick = () => setIsOpen((prev) => !prev);
+	const toggle = () => setIsOpen((prev) => !prev);
+	const sidebarRef = useRef<HTMLElement | null>(null);
+
+	useClickOutside(sidebarRef, isOpen, () => setIsOpen(false));
 
 	return (
 		<>
-			<ArrowButton isOpen={isOpen} onClick={onClick} />
+			<ArrowButton isOpen={isOpen} onClick={toggle} />
 			{isOpen && (
 				<aside
+					ref={sidebarRef}
 					className={clsx(styles.container, {
 						[styles.container_open]: isOpen,
 					})}>
