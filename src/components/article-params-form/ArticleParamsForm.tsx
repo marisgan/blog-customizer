@@ -16,7 +16,7 @@ import { Select } from 'src/ui/select';
 import { Separator } from 'src/ui/separator';
 import { Text } from 'src/ui/text';
 import styles from './ArticleParamsForm.module.scss';
-import { useClickOutside } from 'src/hooks/useClickOutside';
+import { useCloseOnOutsideClickOrEsc } from '../../hooks/useCloseOnOutsideClickOrEsc';
 
 type ArticleParamsFormProps = {
 	value: ArticleStateType;
@@ -35,7 +35,7 @@ export const ArticleParamsForm = ({
 	const toggle = () => setIsOpen((prev) => !prev);
 	const sidebarRef = useRef<HTMLElement | null>(null);
 
-	useClickOutside(sidebarRef, isOpen, () => setIsOpen(false));
+	useCloseOnOutsideClickOrEsc(isOpen, () => setIsOpen(false), sidebarRef);
 
 	const onSubmit = (e: React.SyntheticEvent) => {
 		e.preventDefault();
